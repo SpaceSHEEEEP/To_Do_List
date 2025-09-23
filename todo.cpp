@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <limits> // fix the cin.ignore below
+#include <limits> 
 
 void addTask(std::string fileName);
 void deleteTask(std::string fileName);
@@ -22,7 +22,7 @@ int main() {
         std::ofstream tempFile{"tasks.txt"};
         tempFile << "eat poop" << '\n';
         tempFile.close();
-        myFile.open("tasks.txt", std::ios::in | std::ios::out);                
+        myFile.open("tasks.txt", std::ios::in);                
 
         std::cout << "here you go" << '\n';
     }
@@ -85,7 +85,7 @@ void addTask(std::string fileName) {
     }
 
     // add new task to myFile
-    myFile << newTask << '\n';
+    myFile << newTask << '\n'; // end txt file with new line
     std::cout << "New task added!" << "\n"; 
     std::cout << "--------------------------------------" << std::endl;
 
@@ -94,7 +94,53 @@ void addTask(std::string fileName) {
 }
 
 void deleteTask(std::string fileName) {
-    std::cout << "deleting task" << '\n';
+    std::ifstream readFile{fileName};
+    char readChar{};
+
+    // find how many tasks there are 
+    int numOfTasks{0};
+    
+    while(readFile.good()) { 
+        readChar = static_cast<char>(readFile.get());
+
+        if (readChar == '\n') {
+            numOfTasks++;
+        }
+    }
+
+    // get which task to delete
+    int deleteIndex{};
+    while (true) {
+        std::cout << "Enter task number to be deleted: ";
+        std::cin >> deleteIndex;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        if (deleteIndex <= numOfTasks) {break;}
+    }
+
+    // i think ill just rewrite the file. its simpler
+    std::string myStr{};
+    readFile.clear();
+    readFile.seekg(0);
+
+    // rewrite file
+    std::ofstream writeFile{"newTasks.txt"};
+    std::string line{};
+    for (int i{1}; i <= numOfTasks; i++) {
+        getline(readFile, line);
+        if (i == deleteIndex) {continue;}
+        writeFile << line << '\n';
+    }
+    
+    std::cout << "Deleted!" << '\n';
+    
+    // delete old tasks.txt file
+    readFile.close();
+    remove("tasks.txt");
+
+    // rename newTasks.txt to tasks.txt
+    rename("newTasks.txt", "tasks.txt");
+    writeFile.close();
 }
 
 void seeTasks(std::string fileName) {
