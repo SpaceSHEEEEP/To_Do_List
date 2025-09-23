@@ -147,10 +147,11 @@ void seeTasks(std::string fileName) {
     std::fstream myFile{fileName, std::ios::in};
     int counter{1};
     std::string strTasks{};
+    
     // print out stuff on the file
     std::cout << "This is what you should be doing:" << '\n';
     while(std::getline(myFile, strTasks)) {
-        std::cout << counter << ". " << strTasks << '\n';
+        std::cout << "  " << counter << ". " << strTasks << '\n';
         counter++;
     }
 
